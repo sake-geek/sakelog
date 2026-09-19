@@ -114,8 +114,7 @@ Firebase Storageを使わず、写真は `users/{uid}/photos/{photoId}` とい�
 
 - 実機ブラウザでの動作確認はしていません。特に都道府県マップのピンチズーム/タップ判定、
   画像クロップのドラッグ操作は、Safari/Chrome双方で挙動を確認しながら調整が必要な可能性があります。
-- PWAアイコンはSVGの簡易版です。iOSのホーム画面アイコンをきれいに表示したい場合は、
-  `icons/icon.svg` を192x192・512x512のPNGに差し替え、`manifest.json` と `index.html` の
-  アイコン参照を更新してください。
+- PWAアイコンは `icons/` 以下のPNG(192/512/apple-touch-icon/favicon)です。デザインを
+  変更したい場合はこのファイルを差し替えてください。
 - Firebaseの無料枠(Sparkプラン)で個人利用には十分ですが、Firestoreには
   1日あたりの読み書き上限(各2万回程度)と合計1GiBの保存容量上限があります。
