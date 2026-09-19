@@ -279,56 +279,96 @@ export function RecordFormScreen(recordId) {
         return section;
       }
 
+      // ネイティブの<input type="range">はタッチ時の挙動をJSから細かく制御できず、
+      // (特にAndroidで)縦スクロールで誤って値が変わる・指を離すとテキスト入力欄に
+      // フォーカスが飛ぶ、といった問題があったため、タップ/ドラッグの判定から
+      // 見た目の描画まで全て自前で行うスライダーに置き換えている。
+      const SLIDER_MIN = 0.5;
+      const SLIDER_MAX = 5;
+      const SLIDER_STEP = 0.5;
+
       function sliderRow(label, value, onSet) {
         const row = el(`
           <div class="slider-row">
             <div class="slider-label">${escapeHtml(label)}: <span class="val">${value.toFixed(1)}</span></div>
-            <input type="range" min="0.5" max="5" step="0.5" value="${value}" />
+            <div class="custom-slider" role="slider" aria-label="${escapeHtml(label)}" tabindex="0">
+              <div class="custom-slider-fill"></div>
+              <div class="custom-slider-thumb"></div>
+            </div>
           </div>
         `);
-        const input = row.querySelector("input");
+        const track = row.querySelector(".custom-slider");
+        const fill = row.querySelector(".custom-slider-fill");
+        const thumb = row.querySelector(".custom-slider-thumb");
         const valSpan = row.querySelector(".val");
 
-        // 縦スクロール中にスライダーへ触れてしまっても値が変わらないようにする。
-        // 動き始めの方向を見て、縦方向優勢なら「スクロールのつもり」と判定し、値を元に戻す。
-        let gestureStartValue = value;
-        let gestureStartX = null;
-        let gestureStartY = null;
-        let gestureIsVertical = false;
+        function paint(v) {
+          const pct = ((v - SLIDER_MIN) / (SLIDER_MAX - SLIDER_MIN)) * 100;
+          fill.style.width = `${pct}%`;
+          thumb.style.left = `${pct}%`;
+        }
+        paint(value);
 
-        input.addEventListener("pointerdown", (ev) => {
-          gestureStartValue = parseFloat(input.value);
-          gestureStartX = ev.clientX;
-          gestureStartY = ev.clientY;
-          gestureIsVertical = false;
-        });
-        input.addEventListener("pointermove", (ev) => {
-          if (gestureStartX === null || gestureIsVertical) return;
-          const dx = ev.clientX - gestureStartX;
-          const dy = ev.clientY - gestureStartY;
-          if (Math.hypot(dx, dy) > 12 && Math.abs(dy) > Math.abs(dx) * 1.3) {
-            gestureIsVertical = true;
-            input.value = gestureStartValue;
-            valSpan.textContent = gestureStartValue.toFixed(1);
-          }
-        });
-        const endGesture = () => {
-          gestureStartX = null;
-          gestureStartY = null;
-          gestureIsVertical = false;
-        };
-        input.addEventListener("pointerup", endGesture);
-        input.addEventListener("pointercancel", endGesture);
+        function valueFromClientX(clientX) {
+          const rect = track.getBoundingClientRect();
+          const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+          const raw = SLIDER_MIN + ratio * (SLIDER_MAX - SLIDER_MIN);
+          const stepped = Math.round(raw / SLIDER_STEP) * SLIDER_STEP;
+          return Math.max(SLIDER_MIN, Math.min(SLIDER_MAX, stepped));
+        }
 
-        input.addEventListener("input", () => {
-          if (gestureIsVertical) {
-            input.value = gestureStartValue;
-            return;
+        function blurActiveTextInput() {
+          const active = document.activeElement;
+          if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) {
+            active.blur();
           }
-          const v = parseFloat(input.value);
-          onSet(v);
+        }
+
+        function applyValueAt(clientX) {
+          const v = valueFromClientX(clientX);
+          paint(v);
           valSpan.textContent = v.toFixed(1);
+          onSet(v);
+        }
+
+        let startX = null;
+        let startY = null;
+        let phase = "idle"; // idle | horizontal | vertical
+
+        track.addEventListener("pointerdown", (ev) => {
+          track.setPointerCapture?.(ev.pointerId);
+          startX = ev.clientX;
+          startY = ev.clientY;
+          phase = "idle";
         });
+        track.addEventListener("pointermove", (ev) => {
+          if (startX === null) return;
+          const dx = ev.clientX - startX;
+          const dy = ev.clientY - startY;
+          if (phase === "idle") {
+            if (Math.hypot(dx, dy) < 6) return;
+            phase = Math.abs(dx) >= Math.abs(dy) ? "horizontal" : "vertical";
+            if (phase === "horizontal") blurActiveTextInput();
+          }
+          if (phase === "horizontal") applyValueAt(ev.clientX);
+        });
+        function finishGesture(ev) {
+          if (phase === "idle" && startX !== null) {
+            // ほとんど動いていない = タップとみなし、その位置の値にする
+            blurActiveTextInput();
+            applyValueAt(ev.clientX);
+          }
+          startX = null;
+          startY = null;
+          phase = "idle";
+        }
+        track.addEventListener("pointerup", finishGesture);
+        track.addEventListener("pointercancel", () => {
+          startX = null;
+          startY = null;
+          phase = "idle";
+        });
+
         return row;
       }
 
