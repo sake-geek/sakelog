@@ -45,22 +45,21 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// アプリ本体(静的ファイル)はキャッシュ優先、Firebase等の通信はネットワークに任せる。
+// アプリ本体(静的ファイル)はネットワーク優先。
+// オンラインなら常に最新版を取得してキャッシュを更新し、オフライン時だけキャッシュにフォールバックする。
+// (キャッシュ優先だと、ホーム画面に追加したPWAが新しいバージョンをいつまでも見に行かなくなるため)
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
-        })
-        .catch(() => cached);
-    })
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
