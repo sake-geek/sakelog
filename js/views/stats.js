@@ -52,6 +52,9 @@ export function StatsScreen() {
       const content = screen.querySelector("#stats-content");
 
       // 左右スワイプで隣のタブに切り替えられるようにする(縦スクロールは邪魔しない)。
+      // touch-action: pan-y でブラウザに「縦方向は素通しし、横方向だけJSに渡す」と伝えることで
+      // 縦スクロール中の誤判定を防ぎ、判定もある程度はっきり動かすまで確定させないようにする。
+      content.style.touchAction = "pan-y";
       let swipeStartX = null;
       let swipeStartY = null;
       let swipeIsHorizontal = null;
@@ -64,14 +67,14 @@ export function StatsScreen() {
         if (swipeStartX === null) return;
         const dx = ev.clientX - swipeStartX;
         const dy = ev.clientY - swipeStartY;
-        if (swipeIsHorizontal === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
-          swipeIsHorizontal = Math.abs(dx) > Math.abs(dy);
+        if (swipeIsHorizontal === null && Math.hypot(dx, dy) > 24) {
+          swipeIsHorizontal = Math.abs(dx) > Math.abs(dy) * 1.5;
         }
       });
       const endSwipe = (ev) => {
         if (swipeStartX === null) return;
         const dx = ev.clientX - swipeStartX;
-        if (swipeIsHorizontal && Math.abs(dx) > 60) {
+        if (swipeIsHorizontal && Math.abs(dx) > 90) {
           const idx = TABS.findIndex((t) => t.id === activeTab);
           if (dx < 0 && idx < TABS.length - 1) {
             activeTab = TABS[idx + 1].id;

@@ -27,7 +27,7 @@ export function HomeScreen() {
           <div class="topbar">
             <h1>日本酒手帳</h1>
             <button class="icon-btn ${favoritesOnly ? "active" : ""}" data-action="fav-filter">${favoritesOnly ? "♥" : "♡"}</button>
-            <button class="icon-btn" data-action="new-folder">📁+</button>
+            <button class="icon-btn" data-action="new-folder"><span class="folder-add-icon">📁<span class="folder-add-badge">＋</span></span></button>
             <button class="icon-btn" data-action="search">🔍</button>
             <button class="icon-btn" data-action="stats">📊</button>
             <button class="icon-btn" data-action="account">👤</button>
