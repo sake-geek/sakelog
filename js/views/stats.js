@@ -123,8 +123,8 @@ function renderPreferenceMap(content, records) {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: { min: 0, max: 5.5, title: { display: true, text: "淡麗 〜 濃醇", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
-          y: { min: 0, max: 5.5, title: { display: true, text: "辛口 〜 甘口", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+          x: { min: 0, max: 5, title: { display: true, text: "淡麗 〜 濃醇", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+          y: { min: 0, max: 5, title: { display: true, text: "辛口 〜 甘口", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
         },
         plugins: { legend: { display: false } },
       },

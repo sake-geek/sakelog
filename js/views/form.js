@@ -68,6 +68,18 @@ export function RecordFormScreen(recordId) {
       `);
 
       const content = screen.querySelector("#form-content");
+
+      // テキスト入力後にスライダーなどを触ると、スマホのキーボードが出しっぱなしで
+      // 邪魔になるため、フォーム内でテキスト系以外の操作が始まったらキーボードを閉じる。
+      content.addEventListener("pointerdown", (ev) => {
+        const active = document.activeElement;
+        if (!active || active === document.body) return;
+        const isTextLike = active.tagName === "INPUT" || active.tagName === "TEXTAREA";
+        if (!isTextLike) return;
+        if (active === ev.target || active.contains(ev.target)) return;
+        active.blur();
+      });
+
       const favBtn = screen.querySelector('[data-action="favorite"]');
       const updateFavBtn = () => {
         favBtn.textContent = state.isFavorite ? "♥" : "♡";
