@@ -449,12 +449,11 @@ canvas#prefCanvas { touch-action: none; }
 
 .auth-panel {
   position: relative;
-  flex: 1;
   min-width: 0;
   margin-top: -36px;
   background: var(--surface);
   border-radius: 28px 28px 0 0;
-  padding: 32px 26px calc(28px + var(--safe-bottom));
+  padding: 32px 26px 30px;
   box-shadow: 0 -12px 30px -20px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
@@ -502,6 +501,58 @@ canvas#prefCanvas { touch-action: none; }
   line-height: 1.6;
   color: var(--text-secondary);
 }
+
+/* ---- auth: feature sections ---- */
+.feature-list {
+  min-width: 0;
+  background: var(--bg);
+  padding: 8px 24px calc(48px + var(--safe-bottom));
+}
+.feature-eyebrow {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--yamabuki-deep);
+  margin-top: 20px;
+}
+.feature-heading {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 6px 0 24px;
+}
+.feature-card {
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 22px;
+  margin-bottom: 16px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.feature-card-alt { background: var(--surface-2); }
+.feature-icon-tile {
+  width: 56px; height: 56px;
+  margin: 0 auto 16px;
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  box-shadow: var(--shadow-sm);
+}
+.feature-card h3 {
+  font-size: 16px;
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+.feature-card p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.feature-cta { margin-top: 28px; }
 
 /* ---- modal sheet (date picker etc) ---- */
 .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 90; display: flex; align-items: flex-end; }
