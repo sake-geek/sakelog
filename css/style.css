@@ -262,7 +262,7 @@ textarea { resize: vertical; min-height: 64px; }
 
 .slider-row { margin-bottom: 14px; }
 .slider-row .slider-label { font-size: 13px; margin-bottom: 4px; }
-input[type="range"] { width: 100%; accent-color: var(--chart-accent); }
+input[type="range"] { width: 100%; accent-color: var(--chart-accent); touch-action: pan-y; }
 
 .style-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .style-row .style-name { width: 72px; font-size: 14px; flex-shrink: 0; }
