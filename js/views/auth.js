@@ -6,11 +6,21 @@ export function AuthScreen() {
     render() {
       const node = el(`
         <div class="screen auth-screen">
-          <div class="auth-card">
-            <div class="auth-emblem">🍶</div>
+          <div class="auth-hero">
+            <div class="auth-decor auth-decor-1"></div>
+            <div class="auth-decor auth-decor-2"></div>
+            <div class="auth-decor auth-decor-3"></div>
+            <span class="auth-eyebrow">SAKE DIARY</span>
             <h1>日本酒手帳</h1>
             <p class="auth-tagline">飲んだ日本酒を、記憶より記録に。</p>
-            <p class="auth-desc">Googleアカウントでログインすると、記録がそのアカウントに保存され、他の端末からも同じアカウントで見られるようになります。</p>
+            <img class="auth-illustration" src="icons/icon-512.png" alt="日本酒手帳" />
+          </div>
+          <div class="auth-panel">
+            <ul class="auth-points">
+              <li><span class="auth-point-icon">📝</span><span class="auth-point-text">銘柄・産地・味わいを手早く記録</span></li>
+              <li><span class="auth-point-icon">☁️</span><span class="auth-point-text">Googleアカウントでどの端末からも同期</span></li>
+              <li><span class="auth-point-icon">📊</span><span class="auth-point-text">好みの傾向をグラフと地図で可視化</span></li>
+            </ul>
             <button class="google-btn" id="google-signin">
               <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
                 <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.85 2.09-1.81 2.73v2.27h2.92c1.71-1.57 2.69-3.88 2.69-6.64z"/>
@@ -20,6 +30,7 @@ export function AuthScreen() {
               </svg>
               <span>Googleでログイン</span>
             </button>
+            <p class="auth-fineprint">ログインすると、記録データはご自身のGoogleアカウントに安全に保存されます。</p>
           </div>
         </div>
       `);
