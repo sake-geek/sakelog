@@ -148,9 +148,9 @@ function pickerDialog(title, options) {
     const overlay = el(`
       <div class="alert-overlay">
         <div class="alert-box">
-          <h3>${title}</h3>
+          <h3>${escapeHtml(title)}</h3>
           <div style="display:flex;flex-direction:column;gap:10px;">
-            ${options.map((o) => `<button data-opt="${o}" class="primary-btn" style="background:var(--surface-2);color:var(--text);">${o}</button>`).join("")}
+            ${options.map((o) => `<button data-opt="${escapeHtml(o)}" class="primary-btn" style="background:var(--surface-2);color:var(--text);">${escapeHtml(o)}</button>`).join("")}
           </div>
           <div class="alert-actions"><button data-action="cancel">キャンセル</button></div>
         </div>

@@ -1,4 +1,4 @@
-import { el, toDateInputValue } from "./helpers.js";
+import { el, toDateInputValue, escapeHtml } from "./helpers.js";
 import { getPhotoURL } from "./photoStore.js";
 
 export function confirmDialog({ title, message, confirmLabel = "OK", cancelLabel = "キャンセル", destructive = false }) {
@@ -6,11 +6,11 @@ export function confirmDialog({ title, message, confirmLabel = "OK", cancelLabel
     const overlay = el(`
       <div class="alert-overlay">
         <div class="alert-box">
-          <h3>${title}</h3>
-          <p>${message}</p>
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(message)}</p>
           <div class="alert-actions">
-            <button data-action="cancel">${cancelLabel}</button>
-            <button data-action="confirm" class="${destructive ? "destructive" : ""}">${confirmLabel}</button>
+            <button data-action="cancel">${escapeHtml(cancelLabel)}</button>
+            <button data-action="confirm" class="${destructive ? "destructive" : ""}">${escapeHtml(confirmLabel)}</button>
           </div>
         </div>
       </div>
@@ -32,12 +32,12 @@ export function promptDialog({ title, message = "", placeholder = "", initialVal
     const overlay = el(`
       <div class="alert-overlay">
         <div class="alert-box">
-          <h3>${title}</h3>
-          ${message ? `<p>${message}</p>` : ""}
-          <input type="text" placeholder="${placeholder}" value="${initialValue}" />
+          <h3>${escapeHtml(title)}</h3>
+          ${message ? `<p>${escapeHtml(message)}</p>` : ""}
+          <input type="text" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(initialValue)}" />
           <div class="alert-actions">
             <button data-action="cancel">キャンセル</button>
-            <button data-action="confirm">${confirmLabel}</button>
+            <button data-action="confirm">${escapeHtml(confirmLabel)}</button>
           </div>
         </div>
       </div>

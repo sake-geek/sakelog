@@ -69,15 +69,31 @@ export function RecordFormScreen(recordId) {
 
       const content = screen.querySelector("#form-content");
 
-      // テキスト入力後にスライダーなどを触ると、スマホのキーボードが出しっぱなしで
-      // 邪魔になるため、フォーム内でテキスト系以外の操作が始まったらキーボードを閉じる。
+      // テキスト入力中に他の場所を「タップ」したらキーボードを閉じる。
+      // ただし下にスクロールしようとして指が動いた場合(タップではない)はキーボードを閉じない。
+      let kbTouchStartX = null;
+      let kbTouchStartY = null;
       content.addEventListener("pointerdown", (ev) => {
+        kbTouchStartX = ev.clientX;
+        kbTouchStartY = ev.clientY;
+      });
+      content.addEventListener("pointerup", (ev) => {
+        if (kbTouchStartX === null) return;
+        const moved = Math.hypot(ev.clientX - kbTouchStartX, ev.clientY - kbTouchStartY) > 10;
+        kbTouchStartX = null;
+        kbTouchStartY = null;
+        if (moved) return;
+
         const active = document.activeElement;
         if (!active || active === document.body) return;
         const isTextLike = active.tagName === "INPUT" || active.tagName === "TEXTAREA";
         if (!isTextLike) return;
         if (active === ev.target || active.contains(ev.target)) return;
         active.blur();
+      });
+      content.addEventListener("pointercancel", () => {
+        kbTouchStartX = null;
+        kbTouchStartY = null;
       });
 
       const favBtn = screen.querySelector('[data-action="favorite"]');
@@ -272,7 +288,43 @@ export function RecordFormScreen(recordId) {
         `);
         const input = row.querySelector("input");
         const valSpan = row.querySelector(".val");
+
+        // 縦スクロール中にスライダーへ触れてしまっても値が変わらないようにする。
+        // 動き始めの方向を見て、縦方向優勢なら「スクロールのつもり」と判定し、値を元に戻す。
+        let gestureStartValue = value;
+        let gestureStartX = null;
+        let gestureStartY = null;
+        let gestureIsVertical = false;
+
+        input.addEventListener("pointerdown", (ev) => {
+          gestureStartValue = parseFloat(input.value);
+          gestureStartX = ev.clientX;
+          gestureStartY = ev.clientY;
+          gestureIsVertical = false;
+        });
+        input.addEventListener("pointermove", (ev) => {
+          if (gestureStartX === null || gestureIsVertical) return;
+          const dx = ev.clientX - gestureStartX;
+          const dy = ev.clientY - gestureStartY;
+          if (Math.hypot(dx, dy) > 12 && Math.abs(dy) > Math.abs(dx) * 1.3) {
+            gestureIsVertical = true;
+            input.value = gestureStartValue;
+            valSpan.textContent = gestureStartValue.toFixed(1);
+          }
+        });
+        const endGesture = () => {
+          gestureStartX = null;
+          gestureStartY = null;
+          gestureIsVertical = false;
+        };
+        input.addEventListener("pointerup", endGesture);
+        input.addEventListener("pointercancel", endGesture);
+
         input.addEventListener("input", () => {
+          if (gestureIsVertical) {
+            input.value = gestureStartValue;
+            return;
+          }
           const v = parseFloat(input.value);
           onSet(v);
           valSpan.textContent = v.toFixed(1);
