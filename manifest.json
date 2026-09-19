@@ -1,0 +1,14 @@
+{
+  "name": "日本酒手帳",
+  "short_name": "日本酒手帳",
+  "description": "飲んだ日本酒を記録するアプリ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFFDF7",
+  "theme_color": "#F7B500",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
