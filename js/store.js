@@ -6,6 +6,8 @@ export const store = {
   records: [],
   folders: [],
   ready: false,
+  accessDenied: false,
+  isAdmin: false,
 };
 
 let unsubRecords = null;
@@ -19,15 +21,29 @@ export function setOnUpdate(cb) {
 export function startListening(uid) {
   stopListening();
   store.uid = uid;
-  unsubRecords = subscribeRecords(uid, (records) => {
-    store.records = records;
-    store.ready = true;
-    onUpdate();
-  });
-  unsubFolders = subscribeFolders(uid, (folders) => {
-    store.folders = folders;
-    onUpdate();
-  });
+  const handleError = (err) => {
+    if (err?.code === "permission-denied") {
+      store.accessDenied = true;
+      onUpdate();
+    }
+  };
+  unsubRecords = subscribeRecords(
+    uid,
+    (records) => {
+      store.records = records;
+      store.ready = true;
+      onUpdate();
+    },
+    handleError
+  );
+  unsubFolders = subscribeFolders(
+    uid,
+    (folders) => {
+      store.folders = folders;
+      onUpdate();
+    },
+    handleError
+  );
 }
 
 export function stopListening() {
@@ -39,4 +55,6 @@ export function stopListening() {
   store.records = [];
   store.folders = [];
   store.ready = false;
+  store.accessDenied = false;
+  store.isAdmin = false;
 }

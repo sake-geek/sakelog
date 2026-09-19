@@ -11,24 +11,30 @@ import {
   serverTimestamp,
   writeBatch,
   getDocs,
+  getDoc,
+  setDoc,
   where,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const foldersCol = (uid) => collection(db, "users", uid, "folders");
 const recordsCol = (uid) => collection(db, "users", uid, "records");
 
-export function subscribeFolders(uid, onChange) {
+export function subscribeFolders(uid, onChange, onError) {
   const q = query(foldersCol(uid), orderBy("name"));
-  return onSnapshot(q, (snap) => {
-    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-  });
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError
+  );
 }
 
-export function subscribeRecords(uid, onChange) {
+export function subscribeRecords(uid, onChange, onError) {
   const q = query(recordsCol(uid), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snap) => {
-    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-  });
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError
+  );
 }
 
 export async function createFolder(uid, name) {
@@ -72,4 +78,42 @@ export async function deleteRecord(uid, recordId) {
 
 export async function toggleFavorite(uid, record) {
   await updateRecord(uid, record.id, { isFavorite: !record.isFavorite });
+}
+
+// ---- 利用申請(招待制アクセス) ----
+const requestsCol = () => collection(db, "accessRequests");
+const requestDoc = (uid) => doc(db, "accessRequests", uid);
+
+/** 初回ログイン時に、申請ドキュメントがなければ「保留中」として作成する。 */
+export async function ensureAccessRequest(uid, email, displayName) {
+  const ref = requestDoc(uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      email: email || "",
+      displayName: displayName || "",
+      status: "pending",
+      requestedAt: serverTimestamp(),
+    });
+  }
+}
+
+/** 自分の申請状況をリアルタイムで監視する。 */
+export function subscribeAccessRequest(uid, onChange) {
+  return onSnapshot(requestDoc(uid), (snap) => {
+    onChange(snap.exists() ? snap.data().status : "pending");
+  });
+}
+
+/** (管理者用)すべての申請をリアルタイムで監視する。 */
+export function subscribeAllAccessRequests(onChange) {
+  const q = query(requestsCol(), orderBy("requestedAt", "desc"));
+  return onSnapshot(q, (snap) => {
+    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  });
+}
+
+/** (管理者用)申請を承認・却下する。 */
+export async function setAccessRequestStatus(uid, status) {
+  await updateDoc(requestDoc(uid), { status, respondedAt: serverTimestamp() });
 }

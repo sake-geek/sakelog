@@ -1,5 +1,5 @@
 import { el } from "../helpers.js";
-import { signInWithGoogle } from "../auth.js";
+import { signInWithGoogle, signOutUser } from "../auth.js";
 
 function googleButtonHtml(id = "google-signin") {
   return `
@@ -91,6 +91,52 @@ export function AuthScreen() {
       wireButton("google-signin");
       wireButton("google-signin-2");
 
+      return node;
+    },
+  };
+}
+
+/** 利用申請を送った直後、管理者の承認待ちの間に表示する画面。 */
+export function PendingApprovalScreen() {
+  return {
+    render() {
+      const node = el(`
+        <div class="screen auth-screen">
+          <div class="auth-card">
+            <div class="auth-emblem">⏳</div>
+            <h1>承認をお待ちください</h1>
+            <p class="auth-desc">
+              このアプリは招待制です。利用申請を送信しました。<br />
+              管理者が承認すると、自動的に使えるようになります。
+            </p>
+            <button class="google-btn" id="signout-btn"><span>ログアウトする</span></button>
+          </div>
+        </div>
+      `);
+      node.querySelector("#signout-btn").addEventListener("click", () => signOutUser());
+      return node;
+    },
+  };
+}
+
+/** 管理者に却下された場合の画面。 */
+export function DeniedScreen() {
+  return {
+    render() {
+      const node = el(`
+        <div class="screen auth-screen">
+          <div class="auth-card">
+            <div class="auth-emblem">🔒</div>
+            <h1>利用が承認されませんでした</h1>
+            <p class="auth-desc">
+              このGoogleアカウントでの利用は許可されていません。<br />
+              心当たりがない場合は、管理者に確認してください。
+            </p>
+            <button class="google-btn" id="signout-btn"><span>ログアウトする</span></button>
+          </div>
+        </div>
+      `);
+      node.querySelector("#signout-btn").addEventListener("click", () => signOutUser());
       return node;
     },
   };

@@ -9,6 +9,7 @@ import { RecordDetailScreen } from "./detail.js";
 import { RecordFormScreen } from "./form.js";
 import { SearchScreen } from "./search.js";
 import { StatsScreen } from "./stats.js";
+import { AdminRequestsScreen } from "./admin.js";
 
 const expandedFolders = new Set();
 let favoritesOnly = false;
@@ -30,6 +31,7 @@ export function HomeScreen() {
             <button class="icon-btn" data-action="new-folder"><span class="folder-add-icon">📁<span class="folder-add-badge">＋</span></span></button>
             <button class="icon-btn" data-action="search">🔍</button>
             <button class="icon-btn" data-action="stats">📊</button>
+            ${store.isAdmin ? '<button class="icon-btn" data-action="admin">🛎</button>' : ""}
             <button class="icon-btn" data-action="account">👤</button>
           </div>
           <div class="content" id="list-content"></div>
@@ -117,6 +119,11 @@ export function HomeScreen() {
       screen.querySelector('[data-action="stats"]').addEventListener("click", () => {
         push(StatsScreen());
       });
+      if (store.isAdmin) {
+        screen.querySelector('[data-action="admin"]').addEventListener("click", () => {
+          push(AdminRequestsScreen());
+        });
+      }
       screen.querySelector('[data-action="account"]').addEventListener("click", async () => {
         const ok = await confirmDialog({ title: "ログアウト", message: "ログアウトしますか?", confirmLabel: "ログアウト", destructive: true });
         if (ok) await signOutUser();
