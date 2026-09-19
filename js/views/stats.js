@@ -123,12 +123,16 @@ function gridColor() {
 
 function renderPreferenceMap(content, records) {
   content.appendChild(el(`<div class="chart-caption">淡麗・濃醇 × 甘口・辛口(色が濃いほど記録が多い)</div>`));
-  const wrap = el(`<div class="chart-wrap" style="height:320px;"><canvas></canvas></div>`);
+  const wrap = el(`
+    <div class="chart-wrap chart-wrap-quad" style="height:320px;">
+      <canvas></canvas>
+      <span class="quad-label quad-tl">淡麗甘口</span>
+      <span class="quad-label quad-tr">濃醇甘口</span>
+      <span class="quad-label quad-bl">淡麗辛口</span>
+      <span class="quad-label quad-br">濃醇辛口</span>
+    </div>
+  `);
   content.appendChild(wrap);
-  content.appendChild(el(`
-    <div class="quad-labels"><span>淡麗甘口</span><span>濃醇甘口</span></div>
-  `));
-  content.appendChild(el(`<div class="quad-labels" style="margin-top:280px;position:relative;top:-320px;"><span>淡麗辛口</span><span>濃醇辛口</span></div>`));
 
   const counts = new Map();
   for (const r of records) {

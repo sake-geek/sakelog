@@ -391,7 +391,20 @@ input[type="range"] { width: 100%; accent-color: var(--chart-accent); touch-acti
 .tab-btn.active { background: var(--chart-accent); color: white; border-color: var(--chart-accent); box-shadow: var(--shadow-sm); }
 .chart-caption { text-align: center; font-size: 12px; color: var(--text-secondary); padding: 8px 0; }
 .chart-wrap { padding: 8px 16px; position: relative; }
-.quad-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); padding: 0 16px; }
+.chart-wrap-quad { position: relative; }
+.quad-label {
+  position: absolute;
+  font-size: 11px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+.quad-tl { top: 4px; left: 46px; }
+.quad-tr { top: 4px; right: 4px; }
+.quad-bl { bottom: 46px; left: 46px; }
+.quad-br { bottom: 46px; right: 4px; }
 .rank-row { padding: 12px 16px; margin: 0 12px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-sm); }
 .rank-row .rank-top { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
 .rank-bar-bg { height: 10px; border-radius: 5px; background: color-mix(in srgb, var(--chart-accent) 15%, transparent); overflow: hidden; }
