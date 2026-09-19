@@ -106,25 +106,29 @@ function renderPreferenceMap(content, records) {
   }));
 
   const accent = chartAccent();
-  currentChart = new Chart(wrap.querySelector("canvas"), {
-    type: "bubble",
-    data: {
-      datasets: [
-        {
-          data: points,
-          backgroundColor: points.map((p) => hexWithAlpha(accent, p.opacity)),
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: { min: 0, max: 5.5, title: { display: true, text: "淡麗 〜 濃醇", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
-        y: { min: 0, max: 5.5, title: { display: true, text: "辛口 〜 甘口", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+  // ChartはcanvasがDOMに実際に挿入された後でないとgetComputedStyleに失敗するため、
+  // 描画後の次フレームまで初期化を遅らせる(都道府県マップのcanvasと同じ対策)。
+  requestAnimationFrame(() => {
+    currentChart = new Chart(wrap.querySelector("canvas"), {
+      type: "bubble",
+      data: {
+        datasets: [
+          {
+            data: points,
+            backgroundColor: points.map((p) => hexWithAlpha(accent, p.opacity)),
+          },
+        ],
       },
-      plugins: { legend: { display: false } },
-    },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { min: 0, max: 5.5, title: { display: true, text: "淡麗 〜 濃醇", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+          y: { min: 0, max: 5.5, title: { display: true, text: "辛口 〜 甘口", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+        },
+        plugins: { legend: { display: false } },
+      },
+    });
   });
 }
 
@@ -175,18 +179,20 @@ function renderPolishing(content, records) {
   content.appendChild(el(`<div class="chart-caption">精米歩合(%) × 総合評価(複数の米を使う場合は最小値)</div>`));
   const wrap = el(`<div class="chart-wrap" style="height:320px;"><canvas></canvas></div>`);
   content.appendChild(wrap);
-  currentChart = new Chart(wrap.querySelector("canvas"), {
-    type: "scatter",
-    data: { datasets: [{ data: points, backgroundColor: chartAccent() }] },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: { min: 0, max: 100, title: { display: true, text: "精米歩合(%)", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
-        y: { min: 0, max: 5.5, title: { display: true, text: "総合評価", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+  requestAnimationFrame(() => {
+    currentChart = new Chart(wrap.querySelector("canvas"), {
+      type: "scatter",
+      data: { datasets: [{ data: points, backgroundColor: chartAccent() }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { min: 0, max: 100, title: { display: true, text: "精米歩合(%)", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+          y: { min: 0, max: 5.5, title: { display: true, text: "総合評価", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+        },
+        plugins: { legend: { display: false } },
       },
-      plugins: { legend: { display: false } },
-    },
+    });
   });
 }
 
@@ -202,18 +208,20 @@ function renderAlcohol(content, records) {
   content.appendChild(el(`<div class="chart-caption">アルコール度数(%) × 総合評価</div>`));
   const wrap = el(`<div class="chart-wrap" style="height:320px;"><canvas></canvas></div>`);
   content.appendChild(wrap);
-  currentChart = new Chart(wrap.querySelector("canvas"), {
-    type: "scatter",
-    data: { datasets: [{ data: points, backgroundColor: chartAccent() }] },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: { min: 0, max: 25, title: { display: true, text: "アルコール度数(%)", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
-        y: { min: 0, max: 5.5, title: { display: true, text: "総合評価", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+  requestAnimationFrame(() => {
+    currentChart = new Chart(wrap.querySelector("canvas"), {
+      type: "scatter",
+      data: { datasets: [{ data: points, backgroundColor: chartAccent() }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { min: 0, max: 25, title: { display: true, text: "アルコール度数(%)", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+          y: { min: 0, max: 5.5, title: { display: true, text: "総合評価", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+        },
+        plugins: { legend: { display: false } },
       },
-      plugins: { legend: { display: false } },
-    },
+    });
   });
 }
 
