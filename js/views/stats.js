@@ -51,6 +51,43 @@ export function StatsScreen() {
 
       const content = screen.querySelector("#stats-content");
 
+      // 左右スワイプで隣のタブに切り替えられるようにする(縦スクロールは邪魔しない)。
+      let swipeStartX = null;
+      let swipeStartY = null;
+      let swipeIsHorizontal = null;
+      content.addEventListener("pointerdown", (ev) => {
+        swipeStartX = ev.clientX;
+        swipeStartY = ev.clientY;
+        swipeIsHorizontal = null;
+      });
+      content.addEventListener("pointermove", (ev) => {
+        if (swipeStartX === null) return;
+        const dx = ev.clientX - swipeStartX;
+        const dy = ev.clientY - swipeStartY;
+        if (swipeIsHorizontal === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+          swipeIsHorizontal = Math.abs(dx) > Math.abs(dy);
+        }
+      });
+      const endSwipe = (ev) => {
+        if (swipeStartX === null) return;
+        const dx = ev.clientX - swipeStartX;
+        if (swipeIsHorizontal && Math.abs(dx) > 60) {
+          const idx = TABS.findIndex((t) => t.id === activeTab);
+          if (dx < 0 && idx < TABS.length - 1) {
+            activeTab = TABS[idx + 1].id;
+            rerender();
+          } else if (dx > 0 && idx > 0) {
+            activeTab = TABS[idx - 1].id;
+            rerender();
+          }
+        }
+        swipeStartX = null;
+        swipeStartY = null;
+        swipeIsHorizontal = null;
+      };
+      content.addEventListener("pointerup", endSwipe);
+      content.addEventListener("pointercancel", endSwipe);
+
       if (records.length === 0) {
         content.appendChild(el(`<div class="empty-state">${favoritesOnly ? "お気に入りの記録がまだありません。" : "まだ記録がありません。"}</div>`));
         return screen;
@@ -188,7 +225,7 @@ function renderPolishing(content, records) {
         maintainAspectRatio: false,
         scales: {
           x: { min: 0, max: 100, title: { display: true, text: "精米歩合(%)", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
-          y: { min: 0, max: 5.5, title: { display: true, text: "総合評価", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+          y: { min: 0, max: 5, title: { display: true, text: "総合評価", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
         },
         plugins: { legend: { display: false } },
       },
@@ -217,7 +254,7 @@ function renderAlcohol(content, records) {
         maintainAspectRatio: false,
         scales: {
           x: { min: 0, max: 25, title: { display: true, text: "アルコール度数(%)", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
-          y: { min: 0, max: 5.5, title: { display: true, text: "総合評価", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
+          y: { min: 0, max: 5, title: { display: true, text: "総合評価", color: textColor() }, ticks: { color: textColor() }, grid: { color: gridColor() } },
         },
         plugins: { legend: { display: false } },
       },
