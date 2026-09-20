@@ -19,9 +19,9 @@ export function HomeScreen() {
     render() {
       const displayRecords = favoritesOnly ? store.records.filter((r) => r.isFavorite) : store.records;
       const unfiled = displayRecords.filter((r) => !r.folderId);
-      const foldersWithItems = store.folders.filter((f) =>
-        displayRecords.some((r) => r.folderId === f.id)
-      );
+      // 中に記録が1件もない、作成したばかりのフォルダも表示する(以前は記録がないフォルダが
+      // 一覧から消えてしまい、フォルダ作成ボタンが効いていないように見えるバグがあった)。
+      const foldersWithItems = store.folders;
 
       const screen = el(`
         <div class="screen">
@@ -42,7 +42,7 @@ export function HomeScreen() {
 
       if (!store.ready) {
         content.appendChild(el(`<div class="empty-state">読み込み中...</div>`));
-      } else if (displayRecords.length === 0) {
+      } else if (displayRecords.length === 0 && foldersWithItems.length === 0) {
         content.appendChild(
           el(`<div class="empty-state">${favoritesOnly ? "お気に入りの記録がありません。" : "まだ記録がありません。右下の + から追加しましょう。"}</div>`)
         );
@@ -111,14 +111,11 @@ export function HomeScreen() {
       });
       screen.querySelector('[data-action="new-folder"]').addEventListener("click", async () => {
         const name = await promptDialog({ title: "新しいフォルダ", placeholder: "フォルダ名" });
-        alert("DEBUG 1: 入力結果 = " + JSON.stringify(name));
         if (!name) return;
         try {
-          alert("DEBUG 2: 作成開始 uid=" + store.uid);
-          const id = await createFolder(store.uid, name);
-          alert("DEBUG 3: 作成成功 id=" + id);
+          await createFolder(store.uid, name);
         } catch (err) {
-          alert("DEBUG ERROR: " + (err?.message || err) + " / code=" + err?.code);
+          alert("フォルダを作成できませんでした: " + (err?.message || err));
         }
       });
       screen.querySelector('[data-action="search"]').addEventListener("click", () => {
