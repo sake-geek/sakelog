@@ -276,6 +276,16 @@ input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, 
 textarea { resize: vertical; min-height: 64px; }
 .hint { font-size: 11px; color: var(--text-secondary); }
 .error-text { font-size: 12px; color: var(--danger); }
+.duplicate-hint {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--yamabuki-deep);
+  background: color-mix(in srgb, var(--yamabuki) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--yamabuki) 40%, transparent);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: -4px 0 8px;
+}
 
 .polish-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
 .polish-row input:first-child { flex: 1; }

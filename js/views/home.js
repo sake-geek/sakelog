@@ -21,9 +21,12 @@ export function HomeScreen() {
     render() {
       const displayRecords = favoritesOnly ? store.records.filter((r) => r.isFavorite) : store.records;
       const unfiled = displayRecords.filter((r) => !r.folderId);
-      // 中に記録が1件もない、作成したばかりのフォルダも表示する(以前は記録がないフォルダが
+      // 通常表示では、記録が0件の作成したばかりのフォルダも表示する(以前は記録がないフォルダが
       // 一覧から消えてしまい、フォルダ作成ボタンが効いていないように見えるバグがあった)。
-      const foldersWithItems = store.folders;
+      // ただしお気に入り表示中は、お気に入りが1件もないフォルダは表示しない。
+      const foldersWithItems = favoritesOnly
+        ? store.folders.filter((f) => displayRecords.some((r) => r.folderId === f.id))
+        : store.folders;
 
       const screen = el(`
         <div class="screen">

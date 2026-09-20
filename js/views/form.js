@@ -200,8 +200,41 @@ export function RecordFormScreen(recordId) {
             section.appendChild(suggestWrap);
           }
         }
-        section.appendChild(textRow("銘柄名", state.brandName, (v) => (state.brandName = v), "brand"));
+        const brandRow = textRow("銘柄名", state.brandName, (v) => (state.brandName = v), "brand");
+        section.appendChild(brandRow);
         if (state.showBrandError) section.appendChild(el(`<div class="error-text">銘柄名を入力してください</div>`));
+
+        const duplicateHint = el(`<div class="duplicate-hint" style="display:none;"></div>`);
+        section.appendChild(duplicateHint);
+
+        function updateDuplicateHint() {
+          const name = state.brandName.trim().toLowerCase();
+          const matches = name
+            ? store.records.filter(
+                (r) => r.id !== original?.id && (r.brandName || "").trim().toLowerCase() === name
+              )
+            : [];
+          if (matches.length === 0) {
+            duplicateHint.style.display = "none";
+            return;
+          }
+          const latest = [...matches].sort((a, b) => {
+            const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : a.createdAt || 0;
+            const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : b.createdAt || 0;
+            return bt - at;
+          })[0];
+          const detailParts = [];
+          if (latest.breweryName) detailParts.push(latest.breweryName);
+          const lastDrank = formatDate(latest.drankDate);
+          if (lastDrank) detailParts.push(`最後に飲んだ日: ${lastDrank}`);
+          duplicateHint.style.display = "block";
+          duplicateHint.textContent =
+            `⚠️ 「${state.brandName.trim()}」は既に${matches.length}件記録されています` +
+            (detailParts.length ? `(${detailParts.join(" ・ ")})` : "");
+        }
+        updateDuplicateHint();
+        brandRow.querySelector("input").addEventListener("input", updateDuplicateHint);
+
         section.appendChild(textRow("酒蔵名", state.breweryName, (v) => (state.breweryName = v), "brewery"));
         section.appendChild(textRow("産地", state.origin, (v) => (state.origin = v), "origin"));
         return section;
