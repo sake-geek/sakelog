@@ -111,7 +111,12 @@ export function HomeScreen() {
       });
       screen.querySelector('[data-action="new-folder"]').addEventListener("click", async () => {
         const name = await promptDialog({ title: "新しいフォルダ", placeholder: "フォルダ名" });
-        if (name) await createFolder(store.uid, name);
+        if (!name) return;
+        try {
+          await createFolder(store.uid, name);
+        } catch (err) {
+          alert("フォルダを作成できませんでした: " + (err?.message || err));
+        }
       });
       screen.querySelector('[data-action="search"]').addEventListener("click", () => {
         push(SearchScreen());
@@ -136,17 +141,21 @@ export function HomeScreen() {
 
 async function showFolderMenu(folder) {
   const choice = await pickerDialog(folder.name, ["名前を変更", "フォルダを削除"]);
-  if (choice === "名前を変更") {
-    const name = await promptDialog({ title: "フォルダ名を変更", initialValue: folder.name });
-    if (name) await renameFolder(store.uid, folder.id, name);
-  } else if (choice === "フォルダを削除") {
-    const ok = await confirmDialog({
-      title: "フォルダの削除",
-      message: `「${folder.name}」を削除しますか?中の記録は「フォルダなし」に移動します。`,
-      confirmLabel: "削除",
-      destructive: true,
-    });
-    if (ok) await deleteFolder(store.uid, folder.id);
+  try {
+    if (choice === "名前を変更") {
+      const name = await promptDialog({ title: "フォルダ名を変更", initialValue: folder.name });
+      if (name) await renameFolder(store.uid, folder.id, name);
+    } else if (choice === "フォルダを削除") {
+      const ok = await confirmDialog({
+        title: "フォルダの削除",
+        message: `「${folder.name}」を削除しますか?中の記録は「フォルダなし」に移動します。`,
+        confirmLabel: "削除",
+        destructive: true,
+      });
+      if (ok) await deleteFolder(store.uid, folder.id);
+    }
+  } catch (err) {
+    alert("操作に失敗しました: " + (err?.message || err));
   }
 }
 
