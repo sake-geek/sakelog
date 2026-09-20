@@ -1,8 +1,8 @@
 import { el, escapeHtml, formatDate, formatNumber, formatSakeMeter, createStarRating } from "../helpers.js";
 import { store } from "../store.js";
-import { deleteRecord, toggleFavorite } from "../dataStore.js";
+import { deleteRecord, toggleFavorite, updateRecord } from "../dataStore.js";
 import { deletePhoto, getPhotoURL } from "../photoStore.js";
-import { confirmDialog, openLightbox } from "../modals.js";
+import { confirmDialog, openLightbox, folderPickerSheet } from "../modals.js";
 import { push, pop } from "../router.js";
 
 export function RecordDetailScreen(recordId) {
@@ -28,6 +28,7 @@ export function RecordDetailScreen(recordId) {
             <button class="icon-btn" data-action="back">←</button>
             <h1>記録の詳細</h1>
             <button class="icon-btn ${record.isFavorite ? "active" : ""}" data-action="favorite">${record.isFavorite ? "♥" : "♡"}</button>
+            <button class="icon-btn" data-action="move-folder">📁</button>
             <button class="icon-btn" data-action="delete">🗑</button>
             <button class="icon-btn" data-action="edit">✎</button>
           </div>
@@ -112,6 +113,15 @@ export function RecordDetailScreen(recordId) {
       screen.querySelector('[data-action="back"]').addEventListener("click", () => pop());
       screen.querySelector('[data-action="favorite"]').addEventListener("click", async () => {
         await toggleFavorite(store.uid, record);
+      });
+      screen.querySelector('[data-action="move-folder"]').addEventListener("click", async () => {
+        const selected = await folderPickerSheet(store.folders, record.folderId || null);
+        if (selected === undefined) return;
+        try {
+          await updateRecord(store.uid, record.id, { folderId: selected });
+        } catch (err) {
+          alert("フォルダの変更に失敗しました: " + (err?.message || err));
+        }
       });
       screen.querySelector('[data-action="delete"]').addEventListener("click", async () => {
         const ok = await confirmDialog({

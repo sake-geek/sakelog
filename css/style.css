@@ -212,6 +212,11 @@ h1, h2, h3, .brand, .auth-card h1 { font-family: var(--font-display); }
 .folder-body.collapsed { display: none; }
 .section-label { padding: 14px 16px 4px; font-weight: 700; font-size: 12.5px; letter-spacing: 0.04em; color: var(--text-secondary); text-transform: uppercase; }
 
+.folder-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 10px 16px 2px; }
+.link-btn { background: none; border: none; color: var(--chart-accent); font-size: 13px; font-weight: 600; cursor: pointer; padding: 4px 0; }
+.link-btn.danger { color: var(--danger); }
+.link-btn:disabled { opacity: 0.4; cursor: default; }
+
 /* ---- FAB ---- */
 .fab {
   position: fixed;

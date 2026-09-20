@@ -94,6 +94,57 @@ export function datePickerSheet(initialValue) {
   });
 }
 
+/**
+ * 記録の移動先フォルダを選ぶシート。「フォルダなし」も選択肢に含む。
+ * 選んだフォルダのid(未分類ならnull)を返す。閉じただけならundefinedを返す。
+ */
+export function folderPickerSheet(folders, currentFolderId) {
+  return new Promise((resolve) => {
+    const overlay = el(`
+      <div class="sheet-overlay">
+        <div class="sheet">
+          <div class="sheet-header">
+            <span>フォルダを選択</span>
+            <button data-action="cancel">キャンセル</button>
+          </div>
+          <div id="folder-picker-list"></div>
+        </div>
+      </div>
+    `);
+    document.body.appendChild(overlay);
+    const list = overlay.querySelector("#folder-picker-list");
+
+    function optionRow(id, label) {
+      const isCurrent = id === (currentFolderId || null);
+      const row = el(`
+        <div class="record-row" style="margin:8px 0;">
+          <div class="info"><div class="brand">${escapeHtml(label)}</div></div>
+          ${isCurrent ? '<span style="color:var(--chart-accent);font-weight:700;">✓</span>' : ""}
+        </div>
+      `);
+      row.addEventListener("click", () => {
+        overlay.remove();
+        resolve(id);
+      });
+      return row;
+    }
+
+    list.appendChild(optionRow(null, "フォルダなし"));
+    folders.forEach((f) => list.appendChild(optionRow(f.id, f.name)));
+
+    overlay.addEventListener("click", (ev) => {
+      if (ev.target === overlay) {
+        overlay.remove();
+        resolve(undefined);
+      }
+    });
+    overlay.querySelector('[data-action="cancel"]').addEventListener("click", () => {
+      overlay.remove();
+      resolve(undefined);
+    });
+  });
+}
+
 export async function openLightbox(photoPaths, initialIndex) {
   let index = initialIndex;
   const overlay = el(`

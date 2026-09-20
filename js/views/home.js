@@ -13,6 +13,8 @@ import { AdminRequestsScreen } from "./admin.js";
 
 const expandedFolders = new Set();
 let favoritesOnly = false;
+let folderSelectMode = false;
+const selectedFolderIds = new Set();
 
 export function HomeScreen() {
   return {
@@ -47,27 +49,46 @@ export function HomeScreen() {
           el(`<div class="empty-state">${favoritesOnly ? "お気に入りの記録がありません。" : "まだ記録がありません。右下の + から追加しましょう。"}</div>`)
         );
       } else {
+        if (foldersWithItems.length > 0) {
+          const toolbar = el(`
+            <div class="folder-toolbar">
+              <button class="link-btn" data-action="toggle-folder-select">${folderSelectMode ? "キャンセル" : "フォルダを選択"}</button>
+              ${folderSelectMode ? `<button class="link-btn danger" data-action="delete-selected-folders" ${selectedFolderIds.size === 0 ? "disabled" : ""}>選択した${selectedFolderIds.size}件を削除</button>` : ""}
+            </div>
+          `);
+          content.appendChild(toolbar);
+        }
+
         for (const folder of foldersWithItems) {
           const items = displayRecords.filter((r) => r.folderId === folder.id);
           const isExpanded = expandedFolders.has(folder.id);
+          const isSelected = selectedFolderIds.has(folder.id);
 
           const header = el(`
             <div class="folder-header">
-              <span>${isExpanded ? "▾" : "▸"}</span>
+              <span>${folderSelectMode ? (isSelected ? "☑️" : "⬜") : isExpanded ? "▾" : "▸"}</span>
               <span>📁 ${escapeHtml(folder.name)} (${items.length})</span>
-              <button class="menu-btn" data-action="folder-menu">⋯</button>
+              ${folderSelectMode ? "" : '<button class="menu-btn" data-action="folder-menu">⋯</button>'}
             </div>
           `);
           header.addEventListener("click", (ev) => {
             if (ev.target.closest('[data-action="folder-menu"]')) return;
+            if (folderSelectMode) {
+              if (selectedFolderIds.has(folder.id)) selectedFolderIds.delete(folder.id);
+              else selectedFolderIds.add(folder.id);
+              rerender();
+              return;
+            }
             if (expandedFolders.has(folder.id)) expandedFolders.delete(folder.id);
             else expandedFolders.add(folder.id);
             rerender();
           });
-          header.querySelector('[data-action="folder-menu"]').addEventListener("click", async (ev) => {
-            ev.stopPropagation();
-            await showFolderMenu(folder);
-          });
+          if (!folderSelectMode) {
+            header.querySelector('[data-action="folder-menu"]').addEventListener("click", async (ev) => {
+              ev.stopPropagation();
+              await showFolderMenu(folder);
+            });
+          }
           content.appendChild(header);
 
           const body = el(`<div class="folder-body ${isExpanded ? "" : "collapsed"}"></div>`);
@@ -133,6 +154,38 @@ export function HomeScreen() {
         const ok = await confirmDialog({ title: "ログアウト", message: "ログアウトしますか?", confirmLabel: "ログアウト", destructive: true });
         if (ok) await signOutUser();
       });
+
+      const toggleSelectBtn = screen.querySelector('[data-action="toggle-folder-select"]');
+      if (toggleSelectBtn) {
+        toggleSelectBtn.addEventListener("click", () => {
+          folderSelectMode = !folderSelectMode;
+          selectedFolderIds.clear();
+          rerender();
+        });
+      }
+      const deleteSelectedBtn = screen.querySelector('[data-action="delete-selected-folders"]');
+      if (deleteSelectedBtn) {
+        deleteSelectedBtn.addEventListener("click", async () => {
+          if (selectedFolderIds.size === 0) return;
+          const ok = await confirmDialog({
+            title: "フォルダの削除",
+            message: `選択した${selectedFolderIds.size}件のフォルダを削除しますか?中の記録は「フォルダなし」に移動します。`,
+            confirmLabel: "削除",
+            destructive: true,
+          });
+          if (!ok) return;
+          try {
+            for (const id of selectedFolderIds) {
+              await deleteFolder(store.uid, id);
+            }
+          } catch (err) {
+            alert("削除に失敗しました: " + (err?.message || err));
+          }
+          folderSelectMode = false;
+          selectedFolderIds.clear();
+          rerender();
+        });
+      }
 
       return screen;
     },
