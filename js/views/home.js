@@ -1,4 +1,4 @@
-import { el, escapeHtml } from "../helpers.js";
+import { el, escapeHtml, ICONS } from "../helpers.js";
 import { store } from "../store.js";
 import { createFolder, renameFolder, deleteFolder, toggleFavorite } from "../dataStore.js";
 import { confirmDialog, promptDialog } from "../modals.js";
@@ -31,8 +31,8 @@ export function HomeScreen() {
             <h1>日本酒手帳</h1>
             <button class="icon-btn ${favoritesOnly ? "active" : ""}" data-action="fav-filter">${favoritesOnly ? "♥" : "♡"}</button>
             <button class="icon-btn" data-action="new-folder"><span class="folder-add-icon">📁<span class="folder-add-badge">＋</span></span></button>
-            <button class="icon-btn" data-action="search">🔍</button>
-            <button class="icon-btn" data-action="stats">📊</button>
+            <button class="icon-btn" data-action="search">${ICONS.search}</button>
+            <button class="icon-btn" data-action="stats">${ICONS.stats}</button>
             ${store.isAdmin ? '<button class="icon-btn" data-action="admin">🛎</button>' : ""}
             <button class="icon-btn" data-action="account">👤</button>
           </div>

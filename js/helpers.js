@@ -2,6 +2,13 @@ export const TAG_TEMPLATES = ["辛口", "甘口", "フルーティ", "濃醇", "
 export const DEFAULT_DRINKING_STYLES = ["冷酒", "常温", "ぬる燗", "熱燗"];
 export const MAX_PHOTOS = 5;
 
+/** OS絵文字ではなく見た目を揃えるための、線画スタイルのアイコン(currentColorで色を継承)。 */
+export const ICONS = {
+  search: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  stats: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="4" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="20" y1="20" x2="20" y2="14"/></svg>`,
+  map: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>`,
+};
+
 /** HTML文字列から要素を1つ作る(ルートは1タグのみ想定)。 */
 export function el(html) {
   const template = document.createElement("template");

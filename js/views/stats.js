@@ -1,4 +1,4 @@
-import { el } from "../helpers.js";
+import { el, ICONS } from "../helpers.js";
 import { store } from "../store.js";
 import { matchPrefecture } from "../prefectures.js";
 import { push, pop, rerender } from "../router.js";
@@ -26,7 +26,7 @@ export function StatsScreen() {
             <button class="icon-btn" data-action="back">←</button>
             <h1>統計・分析</h1>
             <button class="icon-btn ${favoritesOnly ? "active" : ""}" data-action="fav">${favoritesOnly ? "♥" : "♡"}</button>
-            <button class="icon-btn" data-action="map">🗺</button>
+            <button class="icon-btn" data-action="map">${ICONS.map}</button>
           </div>
           <div class="tabbar">
             ${TABS.map((t) => `<button class="tab-btn ${t.id === activeTab ? "active" : ""}" data-tab="${t.id}">${t.label}</button>`).join("")}
