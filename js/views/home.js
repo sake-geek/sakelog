@@ -111,11 +111,14 @@ export function HomeScreen() {
       });
       screen.querySelector('[data-action="new-folder"]').addEventListener("click", async () => {
         const name = await promptDialog({ title: "新しいフォルダ", placeholder: "フォルダ名" });
+        alert("DEBUG 1: 入力結果 = " + JSON.stringify(name));
         if (!name) return;
         try {
-          await createFolder(store.uid, name);
+          alert("DEBUG 2: 作成開始 uid=" + store.uid);
+          const id = await createFolder(store.uid, name);
+          alert("DEBUG 3: 作成成功 id=" + id);
         } catch (err) {
-          alert("フォルダを作成できませんでした: " + (err?.message || err));
+          alert("DEBUG ERROR: " + (err?.message || err) + " / code=" + err?.code);
         }
       });
       screen.querySelector('[data-action="search"]').addEventListener("click", () => {
