@@ -1,4 +1,4 @@
-import { el, escapeHtml, formatDate, TAG_TEMPLATES, DEFAULT_DRINKING_STYLES, MAX_PHOTOS, createStarRating } from "../helpers.js";
+import { el, escapeHtml, formatDate, TAG_TEMPLATES, DEFAULT_DRINKING_STYLES, MAX_PHOTOS, createStarRating, ICONS } from "../helpers.js";
 import { store } from "../store.js";
 import { createRecord, updateRecord, deleteRecord, resolveFolderId } from "../dataStore.js";
 import { uploadPhoto, deletePhoto, getPhotoURL } from "../photoStore.js";
@@ -60,7 +60,7 @@ export function RecordFormScreen(recordId) {
             <button class="icon-btn" data-action="cancel">✕</button>
             <h1>${isEditing ? "記録を編集" : "記録を追加"}</h1>
             <button class="icon-btn" data-action="favorite"></button>
-            ${isEditing ? '<button class="icon-btn" data-action="delete">🗑</button>' : ""}
+            ${isEditing ? `<button class="icon-btn" data-action="delete">${ICONS.trash}</button>` : ""}
             <button class="icon-btn" data-action="save">✓</button>
           </div>
           <div class="content" id="form-content"></div>

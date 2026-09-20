@@ -33,7 +33,7 @@ export function HomeScreen() {
           <div class="topbar">
             <h1>日本酒手帳</h1>
             <button class="icon-btn ${favoritesOnly ? "active" : ""}" data-action="fav-filter">${favoritesOnly ? "♥" : "♡"}</button>
-            <button class="icon-btn" data-action="new-folder"><span class="folder-add-icon">📁<span class="folder-add-badge">＋</span></span></button>
+            <button class="icon-btn" data-action="new-folder"><span class="folder-add-icon">${ICONS.folder}<span class="folder-add-badge">＋</span></span></button>
             <button class="icon-btn" data-action="search">${ICONS.search}</button>
             <button class="icon-btn" data-action="stats">${ICONS.stats}</button>
             ${store.isAdmin ? '<button class="icon-btn" data-action="admin">🛎</button>' : ""}
@@ -70,7 +70,7 @@ export function HomeScreen() {
           const header = el(`
             <div class="folder-header">
               <span>${folderSelectMode ? (isSelected ? "☑️" : "⬜") : isExpanded ? "▾" : "▸"}</span>
-              <span>📁 ${escapeHtml(folder.name)} (${items.length})</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;"><span class="icon-inline" style="width:16px;height:16px;">${ICONS.folder}</span>${escapeHtml(folder.name)} (${items.length})</span>
               ${folderSelectMode ? "" : '<button class="menu-btn" data-action="folder-menu">⋯</button>'}
             </div>
           `);

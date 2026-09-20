@@ -1,4 +1,4 @@
-import { el, escapeHtml, formatDate, formatNumber, formatSakeMeter, createStarRating } from "../helpers.js";
+import { el, escapeHtml, formatDate, formatNumber, formatSakeMeter, createStarRating, ICONS } from "../helpers.js";
 import { store } from "../store.js";
 import { deleteRecord, toggleFavorite, updateRecord } from "../dataStore.js";
 import { deletePhoto, getPhotoURL } from "../photoStore.js";
@@ -28,9 +28,9 @@ export function RecordDetailScreen(recordId) {
             <button class="icon-btn" data-action="back">←</button>
             <h1>記録の詳細</h1>
             <button class="icon-btn ${record.isFavorite ? "active" : ""}" data-action="favorite">${record.isFavorite ? "♥" : "♡"}</button>
-            <button class="icon-btn" data-action="move-folder">📁</button>
-            <button class="icon-btn" data-action="delete">🗑</button>
-            <button class="icon-btn" data-action="edit">✎</button>
+            <button class="icon-btn" data-action="move-folder">${ICONS.folder}</button>
+            <button class="icon-btn" data-action="delete">${ICONS.trash}</button>
+            <button class="icon-btn" data-action="edit">${ICONS.edit}</button>
           </div>
           <div class="content" id="detail-content"></div>
         </div>
